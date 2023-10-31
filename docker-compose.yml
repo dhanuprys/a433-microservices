@@ -1,0 +1,36 @@
+# PART OF DICODING SUBMISSION
+
+# Menggunakan versi 2+
+version: "3.7"
+
+services:
+  # Membuat service item-app untuk menghandle web dan interaksi user
+  item-app:
+    # Melakukan restart secara otomatis ketik terjadi error atau terhenti
+    restart: always
+    # Menggunakan image yang sudah dibuat sebelumnya
+    image: dhanuprys/item-app:v1
+    # Remap port host 80 menjadi 8080 pada container
+    ports:
+      - "80:8080"
+    # Menjalankan container berdasarkan status dari service item_db.
+    depends_on:
+      item-db:
+        condition: service_started
+        restart: true
+    
+  # Membuat service item-db yang digunakan untuk menghandle 
+  # penyimpanan data
+  item-db:
+    # Menggunakan image mongo:3 yang di-pull langsung dari docker hub library
+    image: mongo:3
+    # Selalu melakukan restart ketika terjadi error atau terhenti
+    restart: always
+    # Menggunakan persistent volume
+    volumes:
+      - app-db:/data/db
+
+# Membuat persistent volume untuk keperluan penyimpanan database
+volumes:
+  app-db:
+    driver: local
